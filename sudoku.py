@@ -5,6 +5,7 @@ Created by:
 
 import numpy as np
 
+
 class sudoku:
     """
     Creates a sudoku. The size is 9x9, and the unknown numbers are identified as 0.

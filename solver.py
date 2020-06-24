@@ -45,6 +45,12 @@ class solver:
                             if s[block_row][index] == 0:
                                 # We sustitute the unknown value with the list of values that it actually can have.
                                 s[block_row][index] = subtract 
+
+                                ####
+                                # Must be updated with the restrictions of not having same values in a complete row or column.
+                                ####
+                                print("try ", s[:])
+                                
                     # When we got'em, we can reboot the array
                     numbers_got = []
 
