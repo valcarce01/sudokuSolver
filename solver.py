@@ -1,8 +1,13 @@
 """
 The way this will work is by creating all the posibilities that are posible and then try them out.
+
+#### IDEAS #########
++ One way to improve the time spent, on the _posibilities_maker_ is to run it on a multiprocess nistead of on
+a loop, as long as it's independent for each block.
 """
 import sudoku
 import time
+import solver_clean_posibilities
 
 class solver:
     """
@@ -14,6 +19,16 @@ class solver:
         + unknown -> how unknown parameters are identified, by default '0'
         """
         # What we will do is to change the unknown parameters for the posibilities it can have.
+        # We will time how long does it take to mark all the possibilities
+        time_start = time.time()
+        self.sudoku = self._posibilities_marker_(s, unknown)
+        time_end = time.time()
+        print("Possibilities made in: ", time_end - time_start)
+
+        # Next step is to clean up all the generated solutions, as long as it's not possible to
+        # get the same 2 numbers (or more) in the same row or column. 
+        self.sudoku_clean = self._clean_posibilities_(self.sudoku)
+        
 
     
     def _posibilities_marker_(self, s, unknown):
@@ -44,28 +59,23 @@ class solver:
                         for index in range(start, end):
                             if s[block_row][index] == 0:
                                 # We sustitute the unknown value with the list of values that it actually can have.
-                                s[block_row][index] = subtract 
-
-                                ####
-                                # Must be updated with the restrictions of not having same values in a complete row or column.
-                                ####
-                                print("try ", s[:])
-                                
+                                s[block_row][index] = subtract                                 
                     # When we got'em, we can reboot the array
                     numbers_got = []
+        return s
 
-        for i in s:
-            print(i)
         
+    def _clean_posibilities_(self, sudoku):
+        """
+        Removes the options that doesn't make sense because of be in the same column/row
+        """
+        return solver_clean_posibilities.clean(sudoku)
+
         
 
 
 if __name__ == "__main__":
     s = sudoku.sudoku_example()
-    print(s)
+    for i in s:
+        print(i)
     sudo = solver(s)
-    a = time.time()
-    sudo._posibilities_marker_(s, 0)
-    b = time.time()
-
-    print("Execution time: ", b - a)

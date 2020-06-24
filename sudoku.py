@@ -4,7 +4,7 @@ Created by:
 """
 
 import numpy as np
-
+import pandas as pd
 
 class sudoku:
     """
