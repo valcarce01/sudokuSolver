@@ -4,6 +4,7 @@ author: @Diego Valcarce
 """
 import sudoku_v2
 import time
+
 class solver:
     def __init__(self, sudoku):
         """
@@ -19,6 +20,8 @@ class solver:
         print("All we can do working with columns and rows done in: ", time.time() - a)
         # for item in self.sudoku._sudoku_values.items():
         #     print(item)
+
+        # The next step is to generate one solution to the sudoku by force:
 
     def generate_posibilities(self):
         """
@@ -58,6 +61,12 @@ class solver:
                         self.sudoku.add_marker(pos_list, (col_index, row_index))
         return added_numbers
         
+    def try_posibilities(self):
+        """
+        Tries the possibilities generated. For that, is created a tree for being travelled after.
+        """
+        
+
         
 
     def _get_block_(self, index: tuple):
@@ -82,11 +91,6 @@ class solver:
             start += 2
 
         return start
-        
-
-                
-                
-
 
 
 if __name__ == "__main__":
