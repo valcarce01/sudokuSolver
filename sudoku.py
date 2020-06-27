@@ -60,6 +60,12 @@ class sudoku:
         Return the value of a position
         """
         return self._sudoku_values[self._sudoku_table[position[1]][position[0]]]
+    
+    def get_value_by_name(self, name):
+        """
+        Returns the value of a given position, like A1, A2...
+        """
+        return self._sudoku_values[name]
 
     def get_row(self, index):
         """
@@ -96,6 +102,38 @@ class sudoku:
         for row in self._sudoku_table[up : up + 3, left : left + 3]:
             for index in row:
                 return_list.append(self._sudoku_values[index])
+
+        return return_list
+    
+    def get_block_combinations(self):
+        """
+        Returns a list of combinations of the letters (A1, A2...) for each block
+        """
+        return_list = []
+        for block in range(9):
+            up = (block) // 3 * 3
+            left = (block) % 3 * 3
+            aux = []
+            for row in self._sudoku_table[up : up + 3, left : left + 3]:
+                
+                for index in row:
+                    aux.append(index)
+                if aux not in return_list:
+                    return_list.append(aux)
+
+        return return_list
+
+
+    def get_block_index(self, block):
+        """
+        Returns a list of the indexes of the actual block
+        """
+        up = (block) // 3 * 3
+        left = (block) % 3 * 3
+        return_list = []
+        for row in self._sudoku_table[up : up + 3, left : left + 3]:
+            for index in row:
+                return_list.append(index)
 
         return return_list
 

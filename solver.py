@@ -2,14 +2,16 @@
 Tries to solve a sudoku
 author: @Diego Valcarce
 """
-import sudoku_v2
+import sudoku
 import time
 import multiprocessing
+from graph import Graph
+import numpy as np
 
 class solver:
     def __init__(self, sudoku):
         """
-        + sudoku: must be a sudoku_v2 object
+        + sudoku: must be a sudoku object
         """
         self.sudoku = sudoku
         added_numbers = self.generate_posibilities(self.sudoku)
@@ -23,19 +25,7 @@ class solver:
         if self.sudoku.check_win():
             print("Win")
         
-        else:
-            a = time.time()
-            pos_solutions = self.force_resolve()
-            print("Al posibilities generated in... {} seconds".format(time.time() - a))
-
-            print("\n\nTrying all of them right now")
-            pool = multiprocessing.Pool()
-            a = time.time()
-            sol = pool.map(func =self._check_list_solutions, iterable = pos_solutions)
-            b = time.time()
-            print(sol)
-            print("Solutions checked in {} seconds".format(b - a))
-
+       
 
     def generate_posibilities(self, sudoku):
         """
@@ -78,46 +68,47 @@ class solver:
         
     def force_resolve(self):
         """
-        If not solved with the posibilities generated, tries to solve it by trying out all the possible combinations
+        If not solved with the posibilities generated, tries to solve it by trying out all the possible combinations, using for that, graphs.
         """
-        sudoku = self.sudoku
-        way = [[]]
-        # What we will create is a list `way` which keeps all the possible ways
-        for row_index in range(9):
-            for col_index in range(9):
-                val = sudoku.get_value((col_index, row_index))
-                
-                
-                if isinstance(val, int):
-                    val = [val]
-                    
-                # What we need to do is basiclly the cross product of all the options.
-                # `extend` method
-                
-                if len(val) == 1:
-                    for pos_sol in way:
-                        pos_sol.extend(val)
-                    
-                else:
-                    actual_way = way.copy()
-                    
-                    way = [self._flatten_([a, b]) for a in way for b in val]
+        graph = Graph()
+        vertices = [chr(letter) + str(number) for letter in range(65, 74) for number in range(1, 10)]
+        for cell in vertices:
+            graph.add_vertex(cell)
 
-        return way
+        # We load the numpy array:
+        table = self.sudoku._sudoku_table
+
+        for index in range(9):
+            row = table[index]
+            col = table[:, index]
+            combinations_row = [(a, b) for a in row for b in row if a != b and b != a]
+            combinations_col = [(a, b) for a in col for b in col if a != b and b != a]
+            # And create the combinations as edges on the graph
+            for edge_index in range(len(combinations_row)):
+                graph.add_edge(*combinations_row[edge_index])
+                graph.add_edge(*combinations_col[edge_index])
+
+        
+        block = self.sudoku.get_block_combinations()
+        for block_values in block:
+            combinations = [(a, b) for a in block_values for b in block_values if a != b and b != a]
+            for edge in combinations:
+                graph.add_edge(*edge)
+        
+        # Now we start calculating
+        
+
+
+
                     
                     
     def _check_list_solutions(self, sudoku):
         """
         Converts list to sudoku object and checks if solution
         """
-        s = sudoku_v2.sudoku(sudoku)
+        s = sudoku.sudoku(sudoku)
         return s.check_win()
-    
-                    
-                    
-            
-                        
-                        
+                      
     def _flatten_(self, nested_list):
         flat_list = []
         for elem in nested_list:
@@ -127,13 +118,7 @@ class solver:
             else:
                 flat_list.append(elem)
         
-        return flat_list
-                
-                    
-
-                
-
-                
+        return flat_list      
     
     def _get_block_(self, index: tuple):
         """
@@ -160,22 +145,23 @@ class solver:
 
 
 if __name__ == "__main__":
-    s = solver(sudoku_v2.sudoku(sudoku_v2.example_sudoku()))
+    s = solver(sudoku.sudoku(sudoku.example_sudoku()))
+    s.force_resolve()
 
-    peter_sudoku = \
-        [
-            8, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 3, 6, 0, 0, 0, 0, 0,
-            0, 7, 0, 0, 9, 0, 2, 0, 0,
-            0, 5, 0, 0, 0, 7, 0, 0, 0,
-            0, 0, 0, 0, 4, 5, 7, 0, 0,
-            0, 0, 0, 1, 0, 0, 0, 3, 0,
-            0, 0, 1, 0, 0, 0, 0, 6, 8,
-            0, 0, 8, 5, 0, 0, 0, 1, 0,
-            0, 9, 0, 0, 0, 0, 4, 0, 0
-        ]
-    s2 = solver(sudoku_v2.sudoku(peter_sudoku))
-    s2.force_resolve()
+    # peter_sudoku = \
+    #     [
+    #         8, 0, 0, 0, 0, 0, 0, 0, 0,
+    #         0, 0, 3, 6, 0, 0, 0, 0, 0,
+    #         0, 7, 0, 0, 9, 0, 2, 0, 0,
+    #         0, 5, 0, 0, 0, 7, 0, 0, 0,
+    #         0, 0, 0, 0, 4, 5, 7, 0, 0,
+    #         0, 0, 0, 1, 0, 0, 0, 3, 0,
+    #         0, 0, 1, 0, 0, 0, 0, 6, 8,
+    #         0, 0, 8, 5, 0, 0, 0, 1, 0,
+    #         0, 9, 0, 0, 0, 0, 4, 0, 0
+    #     ]
+    # s2 = solver(sudoku.sudoku(peter_sudoku))
+    # s2.force_resolve()
     # for i in s2.sudoku._sudoku_values.items():
     #     print(i)
     # s.try_posibilities()
