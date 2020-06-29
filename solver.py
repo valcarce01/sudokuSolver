@@ -66,7 +66,7 @@ class solver:
         return added_numbers
         
         
-    def force_resolve(self):
+    def force_resolve(self, sudoku):
         """
         If not solved with the posibilities generated, tries to solve it by trying out all the possible combinations, using for that, graphs.
         """
@@ -96,6 +96,11 @@ class solver:
                 graph.add_edge(*edge)
         
         # Now we start calculating
+        vertices_degree = {}
+        for vertex in vertices:
+            vertices_degree[vertex] = graph.degree(vertex)
+
+        print(vertices_degree)
         
 
 
