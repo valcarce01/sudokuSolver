@@ -1,6 +1,7 @@
 #   ***     IMPORTATIONS    ***
 import numpy as np
 import time
+import copy
 
 class sudoku:
     """
@@ -80,16 +81,38 @@ class sudoku:
                             added_numbers += len(difference) - len(self._data[vertex_pointed]["POS_VALUES"])
                 return added_numbers
             
-            while (added_numbers + _remove_()) > added_numbers:
-                added_numbers = _remove_()
-
-
+            def _run_(added_numbers = added_numbers):
+                while (added_numbers + _remove_()) > added_numbers:
+                    added_numbers = _remove_()
+                    return added_numbers
             
-
-        def travel_graph(self):
-            """
+            added_numbers = _run_()
             
+            return {vertex: self._data[vertex]["POS_VALUES"] for vertex in self._data.keys()}
+
+
+        def check_unique(self):
             """
+            If there is a position on the graph where it's a list of posibilities, but one of them is just in that vertex,
+            we can be sure that it's the just unic position where it can be
+            """
+            for vertex in self._data.keys():
+                for posible_number in self._data[vertex]["POS_VALUES"]:
+                    check_in = self._data[vertex]["point_to"]
+                    its_in = []
+                    for i in check_in:
+                        if posible_number not in self._data[i]["POS_VALUES"]:
+                            its_in.append(i)
+                    if len(its_in) == 0:
+                        print("one less")
+                    else:
+                        print(its_in)
+            
+            # return {vertex: self._data[vertex]["POS_VALUES"] for vertex in self._data.keys()}
+        
+
+
+        
 
         def _list_of_pos_(self):
             """
@@ -159,11 +182,28 @@ class sudoku:
 
         # Once it has been created the vertices and the edges, it's time to remove the values that can not take place
         start_time_removing_non_valid = time.time()
-        self.graph.remove_non_accepted_values()
+        self._sudoku_values = self.graph.remove_non_accepted_values()
         end_time_removing_non_valid = time.time()
         print("Remove all the invalid values toke {} seconds".format(end_time_removing_non_valid - start_time_removing_non_valid))
-        print(self.check_win())
-        # print(self.graph)
+        
+
+    def solve(self):
+        """
+        Solves the sudoku (tries to)
+        """ 
+        # We need to figure out wheter we already won:
+        if self.check_win():
+            print("Sudoku solved")
+            solutions = ""
+            for index, value in self._sudoku_values.items():
+                solutions += f"{index} -> {value} \n"
+            return solutions
+        
+        else:
+            self.graph.check_unique()
+            print(self.graph)
+        
+
         
 
     def get_block_combinations(self):
@@ -194,37 +234,63 @@ class sudoku:
             result = result and (len(i) == 1)
         return result
 
+    def check_win_from_dict(self, d):
+        """
+        Checks win from a dictionary of values
+        """
+
+
     def __str__(self):
         return self.graph.__str__()
         
-        
+    def _sort_by_len_values(self, grpah_to_sort):
+        """
+        Returns the sorted dictionary by the len of the values
+        """
+        return dict(sorted(grpah_to_sort._data.items(), key = lambda x: x[1]["len"]))
 
 
 
 if __name__ == "__main__":
-    s = sudoku(
-        [5, 3, 0, 0, 7, 0, 0, 0, 0,
-        6, 0, 0, 1, 9, 5, 0, 0, 0,
-        0, 9, 8, 0, 0, 0, 0, 6, 0,
-        8, 0, 0, 0, 6, 0, 0, 0, 3,
-        4, 0, 0, 8, 0, 3, 0, 0, 1,
-        7, 0, 0, 0, 2, 0, 0, 0, 6,
-        0, 6, 0, 0, 0, 0, 2, 8, 0,
-        0, 0, 0, 4, 1, 9, 0, 0, 5,
-        0, 0, 0, 0, 8, 0, 0, 7, 9]
-    )
+    # s = sudoku(
+    #     [5, 3, 0, 0, 7, 0, 0, 0, 0,
+    #     6, 0, 0, 1, 9, 5, 0, 0, 0,
+    #     0, 9, 8, 0, 0, 0, 0, 6, 0,
+    #     8, 0, 0, 0, 6, 0, 0, 0, 3,
+    #     4, 0, 0, 8, 0, 3, 0, 0, 1,
+    #     7, 0, 0, 0, 2, 0, 0, 0, 6,
+    #     0, 6, 0, 0, 0, 0, 2, 8, 0,
+    #     0, 0, 0, 4, 1, 9, 0, 0, 5,
+    #     0, 0, 0, 0, 8, 0, 0, 7, 9]
+    # )
 
-    sudo = sudoku(
+    # sudo = sudoku(
+    #     [
+    #         0, 0, 1, 3, 7, 8, 0, 0, 9,
+    #         3, 2, 0, 9, 0, 0, 0, 5, 0,
+    #         9, 7, 4, 1, 0, 2, 6, 3, 0,
+    #         0, 1, 6, 0, 8, 0, 0, 0, 0,
+    #         7, 9, 0, 0, 0, 0, 0, 8, 5,
+    #         0, 0, 0, 0, 3, 0, 1, 9, 0,
+    #         0, 6, 9, 4, 0, 3, 8, 7, 2,
+    #         8, 4, 0, 0, 0, 7, 5, 1, 3,
+    #         1, 0, 0, 8, 2, 5, 9, 0, 0
+    #     ]
+    # )
+    # print(sudo.solve())
+    # print(sudo)
+
+    s = sudoku(
         [
-            0, 0, 1, 3, 7, 8, 0, 0, 9,
-            3, 2, 0, 9, 0, 0, 0, 5, 0,
-            9, 7, 4, 1, 0, 2, 6, 3, 0,
-            0, 1, 6, 0, 8, 0, 0, 0, 0,
-            7, 9, 0, 0, 0, 0, 0, 8, 5,
-            0, 0, 0, 0, 3, 0, 1, 9, 0,
-            0, 6, 9, 4, 0, 3, 8, 7, 2,
-            8, 4, 0, 0, 0, 7, 5, 1, 3,
-            1, 0, 0, 8, 2, 5, 9, 0, 0
+        0, 0, 8, 7, 0, 0, 0, 0, 0,
+        9, 3, 0, 0, 0, 0, 0, 0, 7,
+        0, 4, 0, 6, 9, 0, 0, 8, 0,
+        0, 0, 0, 5, 0, 9, 3, 1, 0,
+        6, 0, 0, 0, 4, 0, 0, 0, 5,
+        0, 9, 5, 8, 0, 2, 0, 0, 0,
+        0, 7, 0, 0, 2, 6, 0, 4, 0,
+        4, 0, 0, 0, 0, 0, 0, 7, 3,
+        0, 0, 0, 0, 0, 8, 9, 0, 0
         ]
     )
-    print(sudo)
+    print(s.solve())

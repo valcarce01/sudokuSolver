@@ -41,5 +41,26 @@ class Travel:
         return dict(sorted(self.values.items(), key = lambda x: x[1]["len"]))
 
 
+class Tree:
+    """
+    Simple tree implementation
+    """
+    class Node:
+        def __init__(self):
+            self.children = dict()
+        
+        def add_children(self, parent, children):
+            if parent in self.children.keys():
+                self.children[parent].append(children)
+            else:
+                self.children[parent] = [children]
+    def __init__(self):
+        """
+        Creates an empty tree
+        """
+        self.data = []
+
+
+
 if __name__ == "__main__":
     t = Travel()
