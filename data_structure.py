@@ -91,6 +91,13 @@ class sudoku:
             
             """
 
+        def _list_of_pos_(self):
+            """
+            Returns the list of the posible values calculated
+            """
+            # for v in self._data.keys():
+
+
         def __str__(self):
             """
             Prints the edges of the graph
@@ -101,11 +108,6 @@ class sudoku:
                 values = self._data[vertex]["POS_VALUES"]
                 string += f"{vertex} points to {pointing} and can have the {values} as values \n"
             return string
-
-
-        
-
-
 
 
 
@@ -160,6 +162,7 @@ class sudoku:
         self.graph.remove_non_accepted_values()
         end_time_removing_non_valid = time.time()
         print("Remove all the invalid values toke {} seconds".format(end_time_removing_non_valid - start_time_removing_non_valid))
+        print(self.check_win())
         # print(self.graph)
         
 
@@ -185,6 +188,14 @@ class sudoku:
         """
         Checks if win
         """
+        check_graph = [self.graph._data[v]["POS_VALUES"] for v in self.graph._data.keys()]
+        result = True
+        for i in check_graph:
+            result = result and (len(i) == 1)
+        return result
+
+    def __str__(self):
+        return self.graph.__str__()
         
         
 
@@ -202,3 +213,18 @@ if __name__ == "__main__":
         0, 0, 0, 4, 1, 9, 0, 0, 5,
         0, 0, 0, 0, 8, 0, 0, 7, 9]
     )
+
+    sudo = sudoku(
+        [
+            0, 0, 1, 3, 7, 8, 0, 0, 9,
+            3, 2, 0, 9, 0, 0, 0, 5, 0,
+            9, 7, 4, 1, 0, 2, 6, 3, 0,
+            0, 1, 6, 0, 8, 0, 0, 0, 0,
+            7, 9, 0, 0, 0, 0, 0, 8, 5,
+            0, 0, 0, 0, 3, 0, 1, 9, 0,
+            0, 6, 9, 4, 0, 3, 8, 7, 2,
+            8, 4, 0, 0, 0, 7, 5, 1, 3,
+            1, 0, 0, 8, 2, 5, 9, 0, 0
+        ]
+    )
+    print(sudo)
