@@ -86,3 +86,4 @@ The first done is to asign a name to each cell, I decided to like:
 
 After that, it's created a graph (for after solving it), the graph has as vertices all the cells and, the edges, connect 2 vertices that can not have the same value. For example, in the table above, A1 can not have a value that is in A2, A3, A4, B1, C1, D1 or A4, as the rules for the sudoku does not allow to have the same values in rows, columns or squares.
 
+![alt text](https://github.com/valcarce01/sudokuSolver/blob/master/files/graph.PNG "Graph example of a 4x4 sudoku")
