@@ -4,14 +4,7 @@ A simple soduko solver implementation. Works for easy sudokus, and it's its only
 The solution implemented involves graphs and sets, i'll explain how it works with an exampleof a 4x4 (this solver is working only for a 9x9). Imagine this sudoku:
 
 
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:14px 20px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:14px 20px;word-break:normal;}
-.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
-</style>
+
 <table class="tg">
 <thead>
   <tr>
@@ -45,14 +38,7 @@ The solution implemented involves graphs and sets, i'll explain how it works wit
 
 
 The first done is to asign a name to each cell, I decided to like:
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;}
-.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  overflow:hidden;padding:14px 20px;word-break:normal;}
-.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-  font-weight:normal;overflow:hidden;padding:14px 20px;word-break:normal;}
-.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
-</style>
+
 <table class="tg">
 <thead>
   <tr>
