@@ -19,18 +19,7 @@ public class solver {
         return sudoku;
     }
 
-    private void permute(int[] l){
-        // Create permutations given a list
-        List<List> result;
-        Arrays a = Arrays.asList(l);
-        
-        for (int i:l){
-            int idx = Arrays.asList(l).indexOf(i);
-            for (int j:){
 
-            }
-        }
-    }
 
     private void create_graph(){
         /* Creates the graph containing the rules*/
