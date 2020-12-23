@@ -1,12 +1,9 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+
 
 public class solver {
-    // comentario
-
-
-    public static int[] s(){
+    // Solves simple sudoku
+    public static int[] get_sudoku(){
         int[] sudoku = {5, 3, 0, 0, 7, 0, 0, 0, 0,
                 6, 0, 0, 1, 9, 5, 0, 0, 0,
                 0, 9, 8, 0, 0, 0, 0, 6, 0,
@@ -21,33 +18,53 @@ public class solver {
 
 
 
-    private void create_graph(){
-        /* Creates the graph containing the rules*/
-        grafo_no_dirigido graph = new grafo_no_dirigido();
-
-        // Let's create the array of the indices of the sudoku
-        int[][] sudoku_positions = new int[9][9];
-        for (int i = 0; i < 81; i++){
-            System.out.println(i);
-            int row = i / 9;
-            int col = i % 9;
-            sudoku_positions[row][col] = i + 1;
-        }
-        System.out.println(Arrays.deepToString(sudoku_positions));
-
-        // Now we need to create the rules
-        // First the rows
-        for (int[] row:sudoku_positions){
-
-        }
-    }
-
 
     public static void main(String[] args) {
-        System.out.println(s().toString());
+        graph g = new graph();
+        g.specify(); // creates the matrix for the sudoku
+        map map_object = new map();
+        map_object.create_map(get_sudoku());
 
-        solver s = new solver();
-        s.create_graph();
+        System.out.println(map_object.dictionary.toString());
+        // Now we need to remove applying the coloring strategy
+        int removed_values = 0;
+        int added = 0;
+        boolean continue_ = true;
+        while (continue_){
+            // map aux_dic = (map)((map)map_object.dictionary).clone();
+            Map aux_dict = new HashMap<>(map_object.dictionary);
+            for (int i = 0; i < 81; i++){
+                List<Integer> values = map_object.get_value(i);
+                if (values.size() == 1){
+                    List<Integer> pointer = g.points_to(i);
+                    // In this case, we can remove the value
+                    for (int p:pointer){
+                        added += map_object.remove_value(p, values.get(0));
+                    }
+                }
+            }
+
+            continue_ = removed_values + added > removed_values;
+            removed_values += added;
+            added = 0;
+            System.out.println(continue_);
+        }
+        /*
+        for (int i = 0; i < 81; i++){
+            List<Integer> values = map_object.get_value(i);
+            if (values.size() == 1){
+                List<Integer> pointer = g.points_to(i);
+                // In this case, we can remove the value
+                for (int p:pointer){
+                    map_object.remove_value(p, values.get(0));
+                }
+            }
+        }
+         */
+        System.out.println(map_object.dictionary.toString());
+
+
+
     }
 
 }
