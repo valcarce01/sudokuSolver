@@ -46,7 +46,6 @@ public class solver {
         boolean continue_ = true;
         while (continue_){
             // map aux_dic = (map)((map)map_object.dictionary).clone();
-            Map aux_dict = new HashMap<>(map_object.dictionary);
             for (int i = 0; i < 81; i++){
                 List<Integer> values = map_object.get_value(i);
                 if (values.size() == 1){
@@ -63,40 +62,93 @@ public class solver {
         }
     }
 
-    public static void pairs(map map_object, graph g){
+    public static void pairs(map map_object, graph g) {
         // If 2 numbers are only available in 2 cells, all the other numbers
         // can't go there
-        for (int i = 0; i < 81; i++){
-            List<Integer> aux = map_object.dictionary.get(i);
+        boolean continue_ = true;
+        int removed_values = 0;
+        int added = 0;
+        while (continue_) {
+            for (int i = 0; i < 81; i++) {
+                List<Integer> aux = map_object.dictionary.get(i);
 
-            if (aux.size() == 2){
-                // lets check if there is another aux list with the same structure
-                List<Integer> pointer = g.points_to(i);
-                int number_of_equals = 0;
-                int actual_pair = 0;
-                for (int p:pointer){
-                    List<Integer> values = map_object.dictionary.get(p);
-                    if (values.equals(aux)){
-                        // they have the same values
-                        number_of_equals += 1;
-                        actual_pair = p;
+                if (aux.size() == 2) {
+                    // System.out.println(aux.toString());
+                    // lets check if there is another aux list with the same structure
+                    List<Integer> pointer = g.points_to(i);
+                    int number_of_equals = 0;
+                    int actual_pair = 0;
+                    for (int p : pointer) {
+                        List<Integer> values = map_object.dictionary.get(p);
+                        if (values.equals(aux)) {
+                            // they have the same values
+                            number_of_equals += 1;
+                            actual_pair = p;
+                        }
                     }
-                }
-                if (number_of_equals == 1){
-                    // We can remove the values of the pair to all the pointers (except themselves)
-                    // System.out.printf("%d %d\n", i, actual_pair);
-                    for (int p:pointer){
-                        // we can remove to all the pointing keys except the actual pair and i
-                        if (p != actual_pair && p != i){
-                            // all the values
-                            for (int to_remove:aux){
-                                map_object.remove_value(p, to_remove);
+                    if (number_of_equals == 1) {
+                        // We can remove the values of the pair to all the pointers (except themselves)
+                        // System.out.printf("%d %d\n", i, actual_pair);
+                        //System.out.println(aux);
+                        //System.out.print(i);
+                        //System.out.print(actual_pair);
+                        int difference = Math.abs(i - actual_pair);
+                        if (difference < 9){
+                            // they are in the same row, so we can remove them from the row and its blocks
+                            // Get the row
+                            int min_multiple = (i)/9 * 9 + 9; // max
+                            for (int aux_row = min_multiple - 9; aux_row < min_multiple; aux_row++){
+                                //System.out.print(aux_row);
+                                // We can remove the values if they are not one of the pair members
+                                if (aux_row != i && aux_row != actual_pair){
+                                    // We can remove them
+                                    for (int to_remove:aux){
+                                        added += map_object.remove_value(aux_row, to_remove);
+                                    }
+                                }
+                            }
+                        }else if(difference%9 == 0){
+                            // they are in columns
+                            for (int aux_col = 0; aux_col < 81; aux_col+=9){
+                                if (aux_col != i && aux_col != actual_pair){
+                                    // We can remove them
+                                    for (int to_remove:aux){
+                                        added += map_object.remove_value(aux_col, to_remove);
+                                    }
+                                }
+                            }
+                        }
+                        // Whatever it is, we can remove both of them from its respective blocks
+                        // First check the position
+                        int aux_row = i / 9; int aux_row_pair = actual_pair / 9;
+                        int aux_col = i % 9; int aux_col_pair = actual_pair % 9;
+                        // And now lets check the start of its block
+                        int start_row = (aux_row) / 3 * 3;
+                        int start_col = (aux_col) / 3 * 3;
+                        //System.out.printf("\nPosición %d %d y auxiliar %d %d", aux_row, aux_col, aux_row_pair, aux_col_pair);
+                        //System.out.printf("\n Bloque comienza en %d %d", start_row, start_col); //
+                        // Now travel the block
+                        for (int r = start_row; r < start_row + 3; r++){ // outside the columns
+                            for (int c = start_col; c < start_col + 3; c++){
+                                //System.out.printf("Position %d %d\n", r, c);
+                                if ((r != aux_row || c != aux_col) &&
+                                        (r != aux_row_pair || c != aux_col_pair)){
+                                    //System.out.print("\nSe borra ");
+                                    //System.out.print(r); System.out.print(c);
+                                    for (int to_remove:aux){
+                                        added += map_object.remove_value(r * 9 + c, to_remove);
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+            continue_ = removed_values + added > removed_values;
+            removed_values += added;
+            added = 0;
         }
+
     }
 
     public static void print_dict(map map_object){
@@ -133,10 +185,12 @@ public class solver {
             // One easy way would be to check the existence of pairs, triples and beyond.
             // After that we will need to play the b+ tree structure
             // be checking
+            System.out.println("\n");
+            print_dict(map_object);
             pairs(map_object, g);
             System.out.println("\n");
             print_dict(map_object);
-            graph_solve(map_object, g);
+            // graph_solve(map_object, g);
             System.out.println(check_win(map_object.dictionary));
 
         }
