@@ -52,7 +52,9 @@ public class solver {
                     List<Integer> pointer = g.points_to(i);
                     // In this case, we can remove the value
                     for (int p:pointer){
-                        added += map_object.remove_value(p, values.get(0));
+                        if (!(map_object.dictionary.get(p).size() == 1)) {
+                            added += map_object.remove_value(p, values.get(0));
+                        }
                     }
                 }
             }
@@ -87,6 +89,8 @@ public class solver {
                         }
                     }
                     if (number_of_equals == 1) {
+                        print_dict(map_object);
+                        System.out.println(aux);
                         // We can remove the values of the pair to all the pointers (except themselves)
                         // System.out.printf("%d %d\n", i, actual_pair);
                         //System.out.println(aux);
@@ -101,9 +105,12 @@ public class solver {
                                 //System.out.print(aux_row);
                                 // We can remove the values if they are not one of the pair members
                                 if (aux_row != i && aux_row != actual_pair){
+                                    //System.out.println(aux_row);
                                     // We can remove them
                                     for (int to_remove:aux){
-                                        added += map_object.remove_value(aux_row, to_remove);
+                                        if (!(map_object.dictionary.get(aux_row).size() == 1)) {
+                                            added += map_object.remove_value(aux_row, to_remove);
+                                        }
                                     }
                                 }
                             }
@@ -113,7 +120,9 @@ public class solver {
                                 if (aux_col != i && aux_col != actual_pair){
                                     // We can remove them
                                     for (int to_remove:aux){
-                                        added += map_object.remove_value(aux_col, to_remove);
+                                        if (!(map_object.dictionary.get(aux_col).size() == 1)) {
+                                            added += map_object.remove_value(aux_col, to_remove);
+                                        }
                                     }
                                 }
                             }
@@ -136,7 +145,9 @@ public class solver {
                                     //System.out.print("\nSe borra ");
                                     //System.out.print(r); System.out.print(c);
                                     for (int to_remove:aux){
-                                        added += map_object.remove_value(r * 9 + c, to_remove);
+                                        if (!(map_object.dictionary.get(r * 9 + c).size() == 1)) {
+                                            added += map_object.remove_value(r * 9 + c, to_remove);
+                                        }
                                     }
                                 }
                             }
@@ -148,7 +159,15 @@ public class solver {
             removed_values += added;
             added = 0;
         }
+    }
 
+    public static boolean check_differences(Map dict1, Map dict2){
+        // Checks whether 2 map objects have the same values or not
+        boolean are_equal = true;
+        for (int i = 0; i < 81; i++){
+            are_equal = are_equal && (dict1.get(i).equals(dict2.get(i)));
+        }
+        return are_equal;
     }
 
     public static void print_dict(map map_object){
@@ -185,6 +204,21 @@ public class solver {
             // One easy way would be to check the existence of pairs, triples and beyond.
             // After that we will need to play the b+ tree structure
             // be checking
+            // Apply the technics
+            pairs(map_object, g);
+            graph_solve(map_object, g);
+            pairs(map_object, g);
+            print_dict(map_object);
+            graph_solve(map_object, g);
+            // pairs(map_object, g);
+
+
+            System.out.println("");
+            print_dict(map_object);
+            /*
+            System.out.println("\n");
+            print_dict(map_object);
+            pairs(map_object, g);
             System.out.println("\n");
             print_dict(map_object);
             pairs(map_object, g);
@@ -192,7 +226,7 @@ public class solver {
             print_dict(map_object);
             // graph_solve(map_object, g);
             System.out.println(check_win(map_object.dictionary));
-
+             */
         }
     }
 
