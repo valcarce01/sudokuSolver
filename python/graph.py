@@ -3,9 +3,8 @@ from functools import reduce # to use a 2 argument function with 3 values
 
 class Graph():
     """Implementation of a simple undirected graph for solving sudokus"""
-    def __init__(self, sudoku: list):
+    def __init__(self):
         """Save the data"""
-        self._sudoku = sudoku
         self._create_adjacency_matrix()
 
     def _create_adjacency_matrix(self):
@@ -39,5 +38,5 @@ class Graph():
 
 
 if __name__ == "__main__":
-    g = Graph([])
+    g = Graph()
     print(g[1])
