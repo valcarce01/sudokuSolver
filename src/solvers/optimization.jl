@@ -1,6 +1,8 @@
 using GLPK, JuMP
-@doc """
-Solves sudoku as an optimization problem
+@doc raw"""
+```julia-rpl
+\LaTeX = \frac{1}{2}
+```
 """
 function optimization(A::Matrix; solver = GLPK.Optimizer)
     nn = size(A)[1]
